@@ -82,11 +82,8 @@ def create_app():
 
     return app
 
-# Expose top-level Flask instance named 'app' for Vercel and WSGI detection
+# Expose Flask application for Vercel
 app = create_app()
-application = app
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    host = os.environ.get("HOST", "127.0.0.1")
-    app.run(debug=False, host=host, port=port)
+    app.run(debug=False, host='127.0.0.1', port=5000)
