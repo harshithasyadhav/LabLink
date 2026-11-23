@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}LabLink — Campus Laboratory Resource Platform{% endblock %}</title>
+  <meta name="description" content="Intelligent Campus Laboratory Resource-Sharing & GenAI Conflict Resolution Platform">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=2.2">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="app-container">
+    <!-- Left Navigation Sidebar -->
+    <aside class="sidebar" aria-label="Main Navigation">
+      <div class="sidebar-header">
+        <a href="{{ url_for('student.dashboard') if session.get('user_role') != 'faculty' else url_for('faculty.dashboard') }}" class="brand-wrapper">
+          <div class="brand-logo-cube" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M10 2v7.31"></path>
+              <path d="M14 9.3V1.99"></path>
+              <path d="M8.5 2h7"></path>
+              <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+              <path d="M5.52 16h12.96"></path>
+            </svg>
+          </div>
+          <div class="brand-title">
+            <span class="brand-name">Lab<span>Link</span></span>
+            <span class="brand-tagline"><span class="live-dot"></span> Campus Grid Active</span>
+          </div>
+        </a>
+      </div>
+
+      <nav class="sidebar-nav">
+        {% if session.get('user_role') == 'faculty' %}
+          <!-- Faculty Navigation -->
+          <div class="nav-section-label">Faculty Administration</div>
+          
+          <a href="{{ url_for('faculty.dashboard') }}" class="nav-link {% if request.endpoint == 'faculty.dashboard' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="3" width="7" height="9" rx="1"></rect>
+              <rect x="14" y="3" width="7" height="5" rx="1"></rect>
+              <rect x="14" y="12" width="7" height="9" rx="1"></rect>
+              <rect x="3" y="16" width="7" height="5" rx="1"></rect>
+            </svg>
+            <span>Overview Hub</span>
+          </a>
+
+          <a href="{{ url_for('faculty.conflict_center') }}" class="nav-link {% if request.endpoint == 'faculty.conflict_center' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+              <path d="M2 17l10 5 10-5"></path>
+              <path d="M2 12l10 5 10-5"></path>
+            </svg>
+            <span>AI Conflict Center</span>
+            {% if active_conflicts_count > 0 %}
+              <span class="nav-counter alert">{{ active_conflicts_count }} Alert</span>
+            {% endif %}
+          </a>
+
+          <a href="{{ url_for('faculty.all_requests') }}" class="nav-link {% if request.endpoint == 'faculty.all_requests' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+            <span>Booking Requests</span>
+          </a>
+
+          <a href="{{ url_for('faculty.manage_equipment') }}" class="nav-link {% if request.endpoint == 'faculty.manage_equipment' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+            <span>Manage Inventory</span>
+          </a>
+
+          <a href="{{ url_for('faculty.equipment_schedule') }}" class="nav-link {% if request.endpoint == 'faculty.equipment_schedule' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+              <line x1="16" y1="2" x2="16" y2="6"></line>
+              <line x1="8" y1="2" x2="8" y2="6"></line>
+              <line x1="3" y1="10" x2="21" y2="10"></line>
+            </svg>
+            <span>Master Schedule</span>
+          </a>
+
+        {% else %}
+          <!-- Student Navigation -->
+          <div class="nav-section-label">Student Workspace</div>
+
+          <a href="{{ url_for('student.dashboard') }}" class="nav-link {% if request.endpoint == 'student.dashboard' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+            <span>Student Dashboard</span>
+          </a>
+
+          <a href="{{ url_for('student.equipment_catalogue') }}" class="nav-link {% if request.endpoint == 'student.equipment_catalogue' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <span>Equipment Discovery</span>
+          </a>
+
+          <a href="{{ url_for('student.project_request') }}" class="nav-link {% if request.endpoint == 'student.project_request' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
+            </svg>
+            <span>Project Access Request</span>
+          </a>
+
+          <a href="{{ url_for('student.my_requests') }}" class="nav-link {% if request.endpoint == 'student.my_requests' %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+              <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+            <span>My Bookings & History</span>
+          </a>
+        {% endif %}
+
+        <div class="nav-section-label">Campus Insights</div>
+        <a href="{{ url_for('analytics.analytics_dashboard') }}" class="nav-link {% if request.endpoint == 'analytics.analytics_dashboard' %}active{% endif %}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="20" x2="18" y2="10"></line>
+            <line x1="12" y1="20" x2="12" y2="4"></line>
+            <line x1="6" y1="20" x2="6" y2="14"></line>
+          </svg>
+          <span>Resource Utilisation</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="profile-card">
+          <div class="profile-avatar" aria-hidden="true">
+            {{ (current_user.name[:1] if current_user else 'U') }}
+          </div>
+          <div class="profile-meta">
+            <div class="profile-name" title="{{ current_user.name if current_user else 'Campus User' }}">
+              {{ current_user.name if current_user else 'Campus User' }}
+            </div>
+            <div class="profile-dept">
+              {{ current_user.department if current_user else 'Engineering' }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <div class="main-wrapper">
+      <!-- Header Navbar -->
+      <header class="top-navbar">
+        <div class="navbar-breadcrumbs">
+          <span class="breadcrumb-campus">Fall 2026 Academic Term</span>
+          <span class="breadcrumb-divider">/</span>
+          <h1 class="breadcrumb-page">{% block page_title %}Campus Laboratory Resource Platform{% endblock %}</h1>
+        </div>
+
+        <div class="navbar-actions">
+          <!-- Persona / Role Switcher -->
+          <div class="role-switcher-box" title="Switch active persona to evaluate different user workflows">
+            <span class="role-switch-title">Persona:</span>
+            <a href="{{ url_for('auth.switch_role', role='student_maya') }}"
+               class="role-pill {% if current_user and current_user.email == 'maya.patel@campus.edu' %}active{% endif %}">
+              <span>Maya</span> <span style="font-size:0.68rem; opacity:0.8;">(Capstone)</span>
+            </a>
+            <a href="{{ url_for('auth.switch_role', role='student_rahul') }}"
+               class="role-pill {% if current_user and current_user.email == 'rahul.sharma@campus.edu' %}active{% endif %}">
+              <span>Rahul</span> <span style="font-size:0.68rem; opacity:0.8;">(Mini-Proj)</span>
+            </a>
+            <a href="{{ url_for('auth.switch_role', role='faculty') }}"
+               class="role-pill {% if session.get('user_role') == 'faculty' %}active{% endif %}">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+              <span>Faculty Admin</span>
+            </a>
+          </div>
+
+          <!-- Notification Indicator -->
+          <a href="{{ url_for('student.my_requests') if session.get('user_role') != 'faculty' else url_for('faculty.conflict_center') }}"
+             class="notification-link" aria-label="Notifications & Alerts">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+            </svg>
+            {% if unread_notifications_count > 0 %}
+              <span class="notification-bubble">{{ unread_notifications_count }}</span>
+            {% endif %}
+          </a>
+        </div>
+      </header>
+
+      <!-- Main Page Body -->
+      <main class="content-body">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-container">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }}" role="alert">
+                  <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    {% if category == 'success' %}
+                      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    {% elif category == 'danger' or category == 'warning' %}
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="8" x2="12" y2="12"></line>
+                      <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    {% else %}
+                      <circle cx="12" cy="12" r="10"></circle>
+                      <line x1="12" y1="16" x2="12" y2="12"></line>
+                      <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    {% endif %}
+                  </svg>
+                  <span>{{ message }}</span>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}?v=2.2"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

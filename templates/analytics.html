@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% block title %}Laboratory Resource Analytics — LabLink{% endblock %}
+{% block page_title %}Resource Utilisation & Campus Lab Analytics{% endblock %}
+
+{% block content %}
+<div class="analytics-page">
+  <!-- Key Performance Metrics Grid -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-icon blue">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="2" y="3" width="20" height="14" rx="2"></rect>
+          <line x1="8" y1="21" x2="16" y2="21"></line>
+          <line x1="12" y1="17" x2="12" y2="21"></line>
+        </svg>
+      </div>
+      <div class="stat-meta">
+        <p>Total Lab Equipment</p>
+        <h3>{{ analytics.total_equipment }}</h3>
+        <span class="stat-delta positive">&#10003; 100% Tracked</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 14 14"></polyline>
+        </svg>
+      </div>
+      <div class="stat-meta">
+        <p>Available Assets</p>
+        <h3>{{ analytics.available_equipment }}</h3>
+        <span class="stat-delta positive">&#9679; Ready to Book</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon purple">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <path d="M12 6v6l4 2"></path>
+        </svg>
+      </div>
+      <div class="stat-meta">
+        <p>Currently Booked</p>
+        <h3>{{ analytics.currently_booked_equipment }}</h3>
+        <span class="stat-delta positive">&#8593; Active Slots</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon amber">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div class="stat-meta">
+        <p>Pending Requests</p>
+        <h3>{{ analytics.pending_requests }}</h3>
+        <span class="stat-delta neutral">&#9203; In Queue</span>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon green">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="20 6 9 17 4 12"></polyline>
+        </svg>
+      </div>
+      <div class="stat-meta">
+        <p>Approved Bookings</p>
+        <h3>{{ analytics.approved_bookings }}</h3>
+        <span class="stat-delta positive">&#10003; Confirmed Sessions</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Utilization Rate Gauge & Summary Card -->
+  <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 1.75rem; margin-bottom: 2rem;">
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3>Campus Lab Utilisation Rate</h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">Active hardware commitment percentage</p>
+        </div>
+      </div>
+      <div class="card-body" style="text-align: center; padding: 2.25rem 1.5rem;">
+        <!-- High-res Radial Gauge in SVG -->
+        <div style="position: relative; width: 180px; height: 180px; margin: 0 auto;">
+          <svg viewBox="0 0 36 36" style="width: 100%; height: 100%; transform: rotate(-90deg);">
+            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none" stroke="#e2e8f0" stroke-width="3" />
+            <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                  fill="none" stroke="url(#radialGradient)" stroke-width="3.5"
+                  stroke-dasharray="{{ analytics.utilization_rate }}, 100" stroke-linecap="round" />
+            <defs>
+              <linearGradient id="radialGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#2563eb" />
+                <stop offset="100%" stop-color="#7c3aed" />
+              </linearGradient>
+            </defs>
+          </svg>
+          <div style="position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+            <span style="font-size: 2.25rem; font-weight: 900; color: #0f172a; line-height: 1; letter-spacing: -0.03em;">
+              {{ analytics.utilization_rate }}%
+            </span>
+            <span style="font-size: 0.72rem; color: #64748b; font-weight: 700; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.05em;">
+              Active Load
+            </span>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.65rem; font-size: 0.88rem; color: #475569; line-height: 1.55;">
+          <strong>{{ analytics.currently_booked_equipment }}</strong> of <strong>{{ analytics.total_equipment }}</strong> specialized assets currently in active session.
+          LabLink's AI conflict resolution guarantees optimal equipment turnover without bottlenecks.
+        </div>
+      </div>
+    </div>
+
+    <!-- Department-Wise Equipment Distribution & Usage -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3>Department-Wise Laboratory Equipment Allocation & Usage</h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">Cross-departmental hardware distribution and booking intensity</p>
+        </div>
+      </div>
+      <div class="card-body">
+        {% if analytics.dept_usage %}
+          <div style="display: flex; flex-direction: column; gap: 1.25rem;">
+            {% for d in analytics.dept_usage %}
+              <div class="breakdown-row" style="margin-bottom: 0;">
+                <div class="breakdown-label-wrap">
+                  <span style="color: #0f172a; font-weight: 700;">{{ d.department }}</span>
+                  <span style="color: #4f46e5; font-weight: 700;">{{ d.booking_count }} Completed/Active &bull; {{ d.equipment_count }} Assets</span>
+                </div>
+                <div class="progress-track" style="height: 10px;">
+                  {% set pct = (d.booking_count * 20) if d.booking_count > 0 else 8 %}
+                  <div class="progress-fill blue" style="width: {{ [pct, 100]|min }}%;"></div>
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% else %}
+          <p style="color: #64748b; text-align: center; padding: 2.5rem;">No department activity recorded yet.</p>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Most Frequently Requested Equipment & Category Breakdown -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.75rem;">
+    <!-- Top Resources Leaderboard -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3>Most Frequently Requested Laboratory Resources</h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">High-demand equipment ranking by student request frequency</p>
+        </div>
+      </div>
+      <div class="card-body" style="padding: 0;">
+        <div class="table-responsive">
+          <table class="custom-table">
+            <thead>
+              <tr>
+                <th style="width: 50px;">Rank</th>
+                <th>Hardware Resource</th>
+                <th>Department</th>
+                <th>Total Requests</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for res in analytics.top_resources %}
+                <tr>
+                  <td>
+                    <span style="display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; border-radius: 50%; font-size: 0.75rem; font-weight: 800; {% if loop.index == 1 %}background: #fef3c7; color: #b45309; border: 1.5px solid #fde68a;{% elif loop.index == 2 %}background: #f1f5f9; color: #475569; border: 1.5px solid #cbd5e1;{% elif loop.index == 3 %}background: #ffedd5; color: #c2410c; border: 1.5px solid #fed7aa;{% else %}background: #f8fafc; color: #64748b; border: 1px solid #e2e8f0;{% endif %}">
+                      #{{ loop.index }}
+                    </span>
+                  </td>
+                  <td>
+                    <div style="font-weight: 800; color: #0f172a;">{{ res.name }}</div>
+                    <span class="eq-code-pill" style="margin-top: 2px;">{{ res.code }}</span>
+                  </td>
+                  <td>
+                    <div style="font-size: 0.85rem; color: #475569;">{{ res.department }}</div>
+                  </td>
+                  <td>
+                    <span class="badge badge-available" style="font-size: 0.82rem; font-weight: 800; padding: 0.3rem 0.75rem;">
+                      {{ res.request_count }} requests
+                    </span>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Category Distribution -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <h3>Laboratory Hardware Categories</h3>
+          <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">Inventory composition across specialized engineering fields</p>
+        </div>
+      </div>
+      <div class="card-body">
+        <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+          {% for cat in analytics.cat_distribution %}
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.85rem 1.15rem; background: #fbfcfe; border-radius: 10px; border: 1px solid #e2e8f0; transition: var(--transition-fast);">
+              <span style="font-weight: 700; color: #0f172a; font-size: 0.9rem;">{{ cat.category }}</span>
+              <span class="badge badge-resolved" style="font-size: 0.8rem; padding: 0.3rem 0.75rem;">
+                {{ cat.count }} Resources
+              </span>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

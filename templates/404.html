@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Page Not Found — LabLink{% endblock %}
+{% block page_title %}404 &bull; Page Not Found{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 3rem auto; text-align: center; padding: 2.5rem 1.5rem;">
+  <div style="font-size: 3.5rem; font-weight: 800; color: #1e40af; line-height: 1;">404</div>
+  <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 1rem 0 0.5rem;">Resource or Page Not Found</h2>
+  <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">
+    The requested laboratory resource or portal page could not be located on the campus network.
+  </p>
+  <div>
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary">Return to Student Portal</a>
+    <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-outline" style="margin-left: 0.5rem;">Faculty Hub</a>
+  </div>
+</div>
+{% endblock %}

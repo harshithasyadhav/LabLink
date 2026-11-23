@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Laboratory Inventory — LabLink{% endblock %}
+{% block page_title %}Laboratory Equipment Inventory Management{% endblock %}
+
+{% block content %}
+<div class="faculty-equipment-page">
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <h3>Campus Laboratory Asset Inventory ({{ equipment_list|length }} Resources)</h3>
+        <p style="font-size: 0.8rem; color: #64748b; margin-top: 2px;">Register new laboratory hardware, edit specifications, or toggle maintenance states.</p>
+      </div>
+      <button type="button" class="btn btn-primary" data-modal-open="addEquipmentModal">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="12" y1="5" x2="12" y2="19"></line>
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add New Equipment Asset
+      </button>
+    </div>
+    <div class="card-body" style="padding: 0;">
+      <div class="table-responsive">
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Equipment Asset</th>
+              <th>Hardware Category</th>
+              <th>Host Department</th>
+              <th>Facility Location</th>
+              <th>Current Status</th>
+              <th>Maintenance Controls</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for eq in equipment_list %}
+              <tr>
+                <td>
+                  <span class="eq-code-pill">{{ eq.code }}</span>
+                  <div style="font-weight: 800; color: #0f172a; margin-top: 3px;">{{ eq.name }}</div>
+                  <div style="font-size: 0.78rem; color: #64748b; max-width: 320px; line-height: 1.4; margin-top: 2px;">{{ eq.specs }}</div>
+                </td>
+                <td>
+                  <span style="font-size: 0.82rem; font-weight: 700; color: #4f46e5;">{{ eq.category }}</span>
+                </td>
+                <td>
+                  <div style="font-weight: 600; color: #1e293b;">{{ eq.department }}</div>
+                </td>
+                <td>
+                  <div style="font-size: 0.85rem; color: #334155; display: flex; align-items: center; gap: 0.35rem;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color: #2563eb;">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                    {{ eq.location }}
+                  </div>
+                </td>
+                <td>
+                  <span class="badge badge-{{ eq.status }}">{{ eq.status }}</span>
+                </td>
+                <td>
+                  <form action="{{ url_for('faculty.manage_equipment') }}" method="POST" style="display: flex; gap: 0.5rem; align-items: center;">
+                    <input type="hidden" name="action" value="toggle_status">
+                    <input type="hidden" name="equipment_id" value="{{ eq.id }}">
+                    
+                    <select name="new_status" class="form-control" style="font-size: 0.82rem; padding: 0.35rem 0.65rem; width: auto; font-weight: 600;" onchange="this.form.submit()">
+                      <option value="available" {% if eq.status == 'available' %}selected{% endif %}>Set Available</option>
+                      <option value="maintenance" {% if eq.status == 'maintenance' %}selected{% endif %}>Set Maintenance</option>
+                      <option value="in_use" {% if eq.status == 'in_use' %}selected{% endif %}>Set In Use</option>
+                      <option value="reserved" {% if eq.status == 'reserved' %}selected{% endif %}>Set Reserved</option>
+                    </select>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Add New Equipment -->
+<div class="modal-overlay" id="addEquipmentModal" role="dialog" aria-modal="true" aria-labelledby="addModalTitle">
+  <div class="modal-card">
+    <div class="modal-header">
+      <h3 id="addModalTitle">Register New Laboratory Hardware Asset</h3>
+      <button type="button" class="close-btn" aria-label="Close modal">&times;</button>
+    </div>
+    <form action="{{ url_for('faculty.manage_equipment') }}" method="POST">
+      <input type="hidden" name="action" value="add">
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="eq_name" class="form-label">Asset / Equipment Name *</label>
+          <input type="text" name="name" id="eq_name" class="form-control"
+                 placeholder="e.g. Tektronix 4-Channel Mixed Domain Oscilloscope" required>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="eq_code" class="form-label">Asset Tracking Code *</label>
+            <input type="text" name="code" id="eq_code" class="form-control"
+                   placeholder="e.g. OSC-ECE-2004" required>
+          </div>
+
+          <div class="form-group">
+            <label for="eq_category" class="form-label">Hardware Category *</label>
+            <select name="category" id="eq_category" class="form-control" required>
+              {% for c in categories %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label for="eq_dept" class="form-label">Managing Department *</label>
+            <select name="department" id="eq_dept" class="form-control" required>
+              {% for d in departments %}
+                <option value="{{ d }}">{{ d }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="eq_loc" class="form-label">Laboratory Room / Building *</label>
+            <input type="text" name="location" id="eq_loc" class="form-control"
+                   placeholder="e.g. Lab 304, Innovation Block" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="eq_specs" class="form-label">Technical Hardware Specifications</label>
+          <textarea name="specs" id="eq_specs" rows="2" class="form-control"
+                    placeholder="Clock rate, VRAM, analog channels, max precision, pre-installed drivers..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="eq_inst" class="form-label">Standard Operating Procedure / Safety Precautions</label>
+          <textarea name="instructions" id="eq_inst" rows="2" class="form-control"
+                    placeholder="Safety precautions, smart card badge requirements, ESD warnings..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" data-modal-close>Cancel</button>
+        <button type="submit" class="btn btn-primary">Save to Laboratory Inventory</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

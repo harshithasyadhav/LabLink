@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}System Error — LabLink{% endblock %}
+{% block page_title %}500 &bull; Laboratory System Exception{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 600px; margin: 3rem auto; text-align: center; padding: 2.5rem 1.5rem;">
+  <div style="font-size: 3.5rem; font-weight: 800; color: #ef4444; line-height: 1;">500</div>
+  <h2 style="font-size: 1.25rem; font-weight: 700; color: #1e293b; margin: 1rem 0 0.5rem;">Internal Laboratory Server Error</h2>
+  <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 1.5rem;">
+    An unexpected error occurred during database access or scheduling calculation. Please try again or notify laboratory operations.
+  </p>
+  <div>
+    <a href="{{ url_for('student.dashboard') }}" class="btn btn-primary">Return to Student Portal</a>
+  </div>
+</div>
+{% endblock %}

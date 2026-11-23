@@ -1,0 +1,276 @@
+{% extends "base.html" %}
+
+{% block title %}AI Conflict Resolution & Fairness Optimization — LabLink{% endblock %}
+{% block page_title %}AI Scheduling Conflict Center & Fairness Optimizer{% endblock %}
+
+{% block content %}
+<div class="conflict-center">
+  <!-- Top Hero Banner -->
+  <div class="conflict-hero-banner">
+    <div style="position: relative; z-index: 2;">
+      <span class="conflict-hero-tag">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+        Multi-Factor Fairness Scheduling Core
+      </span>
+      <h2 style="font-size: 1.65rem; font-weight: 800; letter-spacing: -0.025em; margin-bottom: 0.5rem; color: #ffffff;">
+        Intelligent Hardware Conflict Resolution & Resource Allocation
+      </h2>
+      <p style="color: #cbd5e1; font-size: 0.95rem; max-width: 840px; line-height: 1.6;">
+        When high-demand laboratory workstations experience overlapping student requests, LabLink eliminates unfair first-come-first-served scheduling.
+        The AI engine evaluates imminent submission deadlines, research criticality, duration efficiency, and student historical equity to propose optimal allocations and alternative slots.
+      </p>
+    </div>
+  </div>
+
+  {% if conflicts %}
+    {% for c in conflicts %}
+      <div class="conflict-card-pro">
+        <!-- Conflict Header Bar -->
+        <div class="conflict-card-header-pro">
+          <div>
+            <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: #6366f1; letter-spacing: 0.06em;">
+              Contested Laboratory Resource & Target Slot
+            </div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; color: #0f172a; margin-top: 2px;">
+              {{ c.equipment_name }}
+            </h3>
+            <div style="font-size: 0.85rem; color: #475569; margin-top: 2px;">
+              <span class="eq-code-pill">{{ c.equipment_code }}</span> &bull; 
+              <strong>Target Session:</strong> <span style="color: #1e40af; font-weight: 700;">{{ c.date }} at {{ c.slot }}</span> &bull; 
+              <strong>Facility:</strong> {{ c.department }}
+            </div>
+          </div>
+          <span class="badge badge-critical" style="font-size: 0.8rem; padding: 0.35rem 0.85rem;">
+            &#9888; Contention Detected (2 Competing Requests)
+          </span>
+        </div>
+
+        <!-- Side-by-Side Candidate Cards Grid -->
+        <div class="conflict-comparison-grid">
+          <!-- Recommended Primary Candidate (Winner) -->
+          <div class="candidate-card is-winner">
+            <div class="winner-ribbon">
+              &#10004; Recommended Primary Allocation
+            </div>
+
+            <div class="candidate-header-row" style="margin-top: 0.5rem;">
+              <div>
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: #1e3a8a;">
+                  {{ c.winner.user_name }}
+                </h4>
+                <div style="font-size: 0.78rem; color: #64748b;">
+                  {{ c.winner.user_dept }} &bull; {{ c.winner.user_email }}
+                </div>
+              </div>
+
+              <div class="score-badge-circle">
+                <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #059669; letter-spacing: 0.05em;">Priority Score</div>
+                <div class="score-number high">
+                  {{ c.winner.scores.composite }}<span style="font-size: 0.95rem; font-weight: 600; color: #059669;">/100</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="candidate-project-card">
+              <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #059669; letter-spacing: 0.05em;">Project & Research Scope</div>
+              <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-top: 2px;">
+                {{ c.winner.project_title if c.winner.project_title else c.winner.purpose }}
+              </div>
+              <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.8rem; flex-wrap: wrap;">
+                <span><strong>Deadline:</strong> <span style="color: #be123c; font-weight: 800;">{{ c.winner.project_deadline if c.winner.project_deadline else 'Immediate' }}</span></span>
+                <span><strong>Urgency:</strong> <span class="badge badge-{{ c.winner.urgency }}">{{ c.winner.urgency }}</span></span>
+                <span><strong>Prior Bookings (14d):</strong> 0 (Equity Boost)</span>
+              </div>
+            </div>
+
+            <!-- Factor Weight Breakdown -->
+            <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+              Fairness Factor Weight Breakdown:
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>1. Project Deadline Proximity (35%)</span>
+                <span style="color: #1e3a8a; font-weight: 800;">{{ c.winner.scores.breakdown.deadline_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill green" style="width: {{ c.winner.scores.breakdown.deadline_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>2. Fairness & Historical Equity (25%)</span>
+                <span style="color: #1e3a8a; font-weight: 800;">{{ c.winner.scores.breakdown.fairness_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill green" style="width: {{ c.winner.scores.breakdown.fairness_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>3. Equipment Criticality (25%)</span>
+                <span style="color: #1e3a8a; font-weight: 800;">{{ c.winner.scores.breakdown.criticality_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill green" style="width: {{ c.winner.scores.breakdown.criticality_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row" style="margin-bottom: 0;">
+              <div class="breakdown-label-wrap">
+                <span>4. Duration Efficiency (15%)</span>
+                <span style="color: #1e3a8a; font-weight: 800;">{{ c.winner.scores.breakdown.duration_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill green" style="width: {{ c.winner.scores.breakdown.duration_score }}%;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Competing Candidate -->
+          <div class="candidate-card">
+            <div class="candidate-header-row" style="margin-top: 0.5rem;">
+              <div>
+                <h4 style="font-size: 1.2rem; font-weight: 800; color: #0f172a;">
+                  {{ c.competitor.user_name }}
+                </h4>
+                <div style="font-size: 0.78rem; color: #64748b;">
+                  {{ c.competitor.user_dept }} &bull; {{ c.competitor.user_email }}
+                </div>
+              </div>
+
+              <div class="score-badge-circle">
+                <div style="font-size: 0.68rem; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;">Priority Score</div>
+                <div class="score-number normal">
+                  {{ c.competitor.scores.composite }}<span style="font-size: 0.95rem; font-weight: 600; color: #64748b;">/100</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="candidate-project-card">
+              <div style="font-size: 0.72rem; font-weight: 800; text-transform: uppercase; color: #64748b; letter-spacing: 0.05em;">Project & Research Scope</div>
+              <div style="font-size: 0.92rem; font-weight: 700; color: #0f172a; margin-top: 2px;">
+                {{ c.competitor.project_title if c.competitor.project_title else c.competitor.purpose }}
+              </div>
+              <div style="display: flex; gap: 1rem; margin-top: 0.5rem; font-size: 0.8rem; flex-wrap: wrap;">
+                <span><strong>Deadline:</strong> {{ c.competitor.project_deadline if c.competitor.project_deadline else '10+ Days Away (Flexible)' }}</span>
+                <span><strong>Urgency:</strong> <span class="badge badge-{{ c.competitor.urgency }}">{{ c.competitor.urgency }}</span></span>
+                <span><strong>Prior Bookings (14d):</strong> 2 Sessions</span>
+              </div>
+            </div>
+
+            <!-- Factor Weight Breakdown -->
+            <div style="font-size: 0.75rem; font-weight: 800; text-transform: uppercase; color: #475569; letter-spacing: 0.05em; margin-bottom: 0.5rem;">
+              Fairness Factor Weight Breakdown:
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>1. Project Deadline Proximity (35%)</span>
+                <span>{{ c.competitor.scores.breakdown.deadline_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill blue" style="width: {{ c.competitor.scores.breakdown.deadline_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>2. Fairness & Historical Equity (25%)</span>
+                <span>{{ c.competitor.scores.breakdown.fairness_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill blue" style="width: {{ c.competitor.scores.breakdown.fairness_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row">
+              <div class="breakdown-label-wrap">
+                <span>3. Equipment Criticality (25%)</span>
+                <span>{{ c.competitor.scores.breakdown.criticality_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill blue" style="width: {{ c.competitor.scores.breakdown.criticality_score }}%;"></div>
+              </div>
+            </div>
+
+            <div class="breakdown-row" style="margin-bottom: 0;">
+              <div class="breakdown-label-wrap">
+                <span>4. Duration Efficiency (15%)</span>
+                <span>{{ c.competitor.scores.breakdown.duration_score }} / 100</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill blue" style="width: {{ c.competitor.scores.breakdown.duration_score }}%;"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Transparent Explainer Box -->
+        <div class="ai-explainer-box">
+          <div class="ai-mode-tag">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+            <span>Decision Mode: {{ c.explanation.mode }}</span>
+          </div>
+
+          <div class="ai-narrative-text">
+            {{ c.explanation.text }}
+          </div>
+
+          <!-- Suggested Alternative Allocation Banner -->
+          <div class="alternative-callout-card">
+            <div>
+              <div style="font-size: 0.72rem; text-transform: uppercase; font-weight: 800; color: #1e40af; letter-spacing: 0.05em;">
+                Automated Alternative Allocation for {{ c.competitor.user_name }}
+              </div>
+              <div style="font-weight: 800; color: #0f172a; font-size: 1rem; margin-top: 2px;">
+                {{ c.alternative.summary }}
+              </div>
+            </div>
+            <span class="badge badge-available" style="padding: 0.35rem 0.75rem;">
+              &#10003; Open Slot Verified
+            </span>
+          </div>
+        </div>
+
+        <!-- Faculty Decision Bar (1-Click Action) -->
+        <div style="padding: 1.25rem 1.75rem; background: #fbfcfe; border-top: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <div style="font-size: 0.85rem; color: #64748b; line-height: 1.4;">
+            Applying this recommendation will confirm <strong>{{ c.winner.user_name }}</strong> for the target slot and immediately provision <strong>{{ c.competitor.user_name }}</strong> into the alternative slot with zero schedule delay.
+          </div>
+
+          <form action="{{ url_for('faculty.resolve_conflict_action') }}" method="POST">
+            <input type="hidden" name="conflict_key" value="{{ c.conflict_key }}">
+            <button type="submit" class="btn btn-resolve-ai">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Apply AI Recommendation (1-Click Resolve)
+            </button>
+          </form>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <!-- Empty State -->
+    <div class="card">
+      <div class="card-body" style="text-align: center; padding: 4rem 1.5rem; color: #64748b;">
+        <div style="width: 60px; height: 60px; border-radius: 50%; background: #dcfce7; color: #15803d; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <polyline points="20 6 9 17 4 12"></polyline>
+          </svg>
+        </div>
+        <h3 style="font-size: 1.35rem; font-weight: 800; color: #0f172a;">All Scheduling Collisions Resolved</h3>
+        <p style="margin: 0.5rem auto 1.5rem; max-width: 480px; font-size: 0.92rem;">
+          All current laboratory reservations hold distinct, non-overlapping time slots across all campus departments.
+        </p>
+        <a href="{{ url_for('faculty.dashboard') }}" class="btn btn-primary">
+          Return to Overview Hub
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
